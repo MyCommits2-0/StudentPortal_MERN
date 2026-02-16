@@ -48,3 +48,43 @@ router.post("/student/register-to-course", (req, res) => {
         }
     })
 })
+
+//login wala 
+router.post('/auth/login', (req, res) => {
+    const { email, password } = req.body
+
+    const sql = 'SELECT * FROM users WHERE email =? and password =?'
+
+    pool.query(sql, [email, password], (error, data) => {
+        if(error) {
+            res.send(result.createResult(error))
+        }
+        else if(data.length == 0){
+            res.send(result.createResult('Invalid email or password bro'))
+         }
+         else{
+            const user = data[0]
+            const payload = {
+                email: user.email,
+                role: user.role
+            }
+            const token = jwt.sign(payload, config.SECRET)
+            const role = user.role
+
+            const userData = {
+                token, 
+                role
+            }
+            res.send(result.createResult(null, userData))
+         }
+    })
+})
+
+router.get('/courses/all-active-courses', (req, res) => {
+    const sql = 'SELECT * from courses'
+    pool.query(sql, (error, data) => {
+        res.send(result.createResult(error, data))
+    })
+})
+
+module.exports = router
