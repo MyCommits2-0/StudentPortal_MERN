@@ -28,3 +28,24 @@ router.post('/add', checkAuthorization, (req,res)=>{
     })
 })
 
+
+router.put('/:courseId',checkAuthorization, (req, res) => {
+    const courseId = req.params.courseId    
+    const {course_name, description,fees, start_date, end_date,video_expire_days} = req.body
+    const sql = 'UPDATE courses SET course_name=?, description=?,fees=?, start_date=?, end_date=?,video_expire_days=? WHERE course_id = ?'
+
+    pool.query(sql, [course_name, description,fees, start_date, end_date,video_expire_days,courseId] ,(error,data) => {
+        res.send(result.createResult(error, data))
+    })
+})
+
+router.delete('/:courseId', checkAuthorization,(req, res) => {
+    const courseId = req.params.courseId
+    const sql = 'DELETE FROM courses WHERE course_id = ?'
+
+    pool.query(sql, [courseId] ,(error,data) => {
+        res.send(result.createResult(error, data))
+    })
+})
+
+module.exports = router
